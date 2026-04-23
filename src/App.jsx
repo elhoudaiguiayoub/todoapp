@@ -30,37 +30,29 @@ function App() {
   };
 
   const deleteTask = (id) => {
-    const updatedTasks = tasks.filter((item) => item.id !== id);
-    setTasks(updatedTasks);
+    setTasks(tasks.filter((item) => item.id !== id));
   };
 
   const toggleTask = (id) => {
-    const updatedTasks = tasks.map((item) =>
-      item.id === id ? { ...item, completed: !item.completed } : item
+    setTasks(
+      tasks.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
     );
-    setTasks(updatedTasks);
-  };
-
-  const clearCompleted = () => {
-    const updatedTasks = tasks.filter((item) => !item.completed);
-    setTasks(updatedTasks);
   };
 
   const filteredTasks = useMemo(() => {
     if (filter === "Active") {
       return tasks.filter((item) => !item.completed);
     }
-
     if (filter === "Completed") {
       return tasks.filter((item) => item.completed);
     }
-
     return tasks;
   }, [tasks, filter]);
 
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((item) => item.completed).length;
-  const activeTasks = totalTasks - completedTasks;
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -70,97 +62,87 @@ function App() {
 
   return (
     <div style={styles.page}>
-      <div style={styles.wrapper}>
-        <div style={styles.header}>
-          <div>
-            <p style={styles.badge}>React Project</p>
-            <h1 style={styles.title}>Task Manager</h1>
-            <p style={styles.subtitle}>
-              A clean and modern to-do app built with React and localStorage.
-            </p>
-          </div>
+      <div style={styles.backgroundGlowOne}></div>
+      <div style={styles.backgroundGlowTwo}></div>
 
-          <div style={styles.statsBox}>
+      <div style={styles.app}>
+        <div style={styles.leftPanel}>
+          <p style={styles.badge}>React Project</p>
+          <h1 style={styles.title}>Task Flow</h1>
+          <p style={styles.description}>
+            A modern task manager with clean UI, local storage, and smooth task
+            control.
+          </p>
+
+          <div style={styles.statsGrid}>
             <div style={styles.statCard}>
               <span style={styles.statNumber}>{totalTasks}</span>
-              <span style={styles.statLabel}>Total</span>
+              <span style={styles.statLabel}>Tasks</span>
             </div>
-            <div style={styles.statCard}>
-              <span style={styles.statNumber}>{activeTasks}</span>
-              <span style={styles.statLabel}>Active</span>
-            </div>
+
             <div style={styles.statCard}>
               <span style={styles.statNumber}>{completedTasks}</span>
-              <span style={styles.statLabel}>Done</span>
+              <span style={styles.statLabel}>Completed</span>
             </div>
           </div>
         </div>
 
-        <div style={styles.card}>
+        <div style={styles.rightPanel}>
           <div style={styles.inputRow}>
             <input
               type="text"
-              placeholder="Enter a new task..."
+              placeholder="Write a new task..."
               value={task}
               onChange={(e) => setTask(e.target.value)}
               onKeyDown={handleKeyDown}
               style={styles.input}
             />
-
             <button onClick={addTask} style={styles.addButton}>
-              Add Task
+              Add
             </button>
           </div>
 
-          <div style={styles.toolbar}>
-            <div style={styles.filterGroup}>
-              <button
-                onClick={() => setFilter("All")}
-                style={{
-                  ...styles.filterButton,
-                  ...(filter === "All" ? styles.filterButtonActive : {}),
-                }}
-              >
-                All
-              </button>
+          <div style={styles.filterRow}>
+            <button
+              onClick={() => setFilter("All")}
+              style={{
+                ...styles.filterButton,
+                ...(filter === "All" ? styles.filterButtonActive : {}),
+              }}
+            >
+              All
+            </button>
 
-              <button
-                onClick={() => setFilter("Active")}
-                style={{
-                  ...styles.filterButton,
-                  ...(filter === "Active" ? styles.filterButtonActive : {}),
-                }}
-              >
-                Active
-              </button>
+            <button
+              onClick={() => setFilter("Active")}
+              style={{
+                ...styles.filterButton,
+                ...(filter === "Active" ? styles.filterButtonActive : {}),
+              }}
+            >
+              Active
+            </button>
 
-              <button
-                onClick={() => setFilter("Completed")}
-                style={{
-                  ...styles.filterButton,
-                  ...(filter === "Completed" ? styles.filterButtonActive : {}),
-                }}
-              >
-                Completed
-              </button>
-            </div>
-
-            <button onClick={clearCompleted} style={styles.clearButton}>
-              Clear Completed
+            <button
+              onClick={() => setFilter("Completed")}
+              style={{
+                ...styles.filterButton,
+                ...(filter === "Completed" ? styles.filterButtonActive : {}),
+              }}
+            >
+              Completed
             </button>
           </div>
 
-          {filteredTasks.length === 0 ? (
-            <div style={styles.emptyState}>
-              <h3 style={styles.emptyTitle}>No tasks found</h3>
-              <p style={styles.emptyText}>
-                Add a new task or change the filter.
-              </p>
-            </div>
-          ) : (
-            <ul style={styles.list}>
-              {filteredTasks.map((item) => (
-                <li key={item.id} style={styles.listItem}>
+          <div style={styles.taskList}>
+            {filteredTasks.length === 0 ? (
+              <div style={styles.emptyBox}>
+                <h3 style={styles.emptyTitle}>Nothing here yet</h3>
+                <p style={styles.emptyText}>Add a task to get started.</p>
+              </div>
+            ) : (
+              filteredTasks.map((item) => (
+                <div key={item.id} style={styles.taskCard}>
                   <div style={styles.taskLeft}>
                     <button
                       onClick={() => toggleTask(item.id)}
@@ -188,10 +170,10 @@ function App() {
                   >
                     Delete
                   </button>
-                </li>
-              ))}
-            </ul>
-          )}
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -201,73 +183,102 @@ function App() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background:
-      "radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 25%), #0f172a",
+    background: "#070b14",
     color: "white",
-    padding: "40px 20px",
     fontFamily: "Arial, sans-serif",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "30px",
+    position: "relative",
+    overflow: "hidden",
   },
-  wrapper: {
-    maxWidth: "900px",
-    margin: "0 auto",
+  backgroundGlowOne: {
+    position: "absolute",
+    width: "350px",
+    height: "350px",
+    borderRadius: "50%",
+    background: "rgba(59, 130, 246, 0.18)",
+    filter: "blur(90px)",
+    top: "-50px",
+    left: "-80px",
   },
-  header: {
+  backgroundGlowTwo: {
+    position: "absolute",
+    width: "300px",
+    height: "300px",
+    borderRadius: "50%",
+    background: "rgba(168, 85, 247, 0.18)",
+    filter: "blur(90px)",
+    bottom: "-60px",
+    right: "-60px",
+  },
+  app: {
+    width: "100%",
+    maxWidth: "1100px",
     display: "grid",
-    gridTemplateColumns: "1.4fr 1fr",
-    gap: "20px",
-    marginBottom: "24px",
+    gridTemplateColumns: "0.9fr 1.1fr",
+    gap: "24px",
+    position: "relative",
+    zIndex: 1,
+  },
+  leftPanel: {
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "28px",
+    padding: "32px",
+    backdropFilter: "blur(18px)",
+    boxShadow: "0 20px 70px rgba(0,0,0,0.35)",
+  },
+  rightPanel: {
+    background: "rgba(255,255,255,0.06)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "28px",
+    padding: "32px",
+    backdropFilter: "blur(18px)",
+    boxShadow: "0 20px 70px rgba(0,0,0,0.35)",
   },
   badge: {
     display: "inline-block",
     padding: "8px 14px",
     borderRadius: "999px",
-    background: "rgba(56, 189, 248, 0.12)",
-    border: "1px solid rgba(56, 189, 248, 0.25)",
-    color: "#67e8f9",
+    background: "rgba(96, 165, 250, 0.12)",
+    color: "#93c5fd",
+    border: "1px solid rgba(96, 165, 250, 0.2)",
+    marginBottom: "20px",
     fontSize: "14px",
-    marginBottom: "14px",
   },
   title: {
-    fontSize: "48px",
-    marginBottom: "10px",
+    fontSize: "54px",
+    lineHeight: 1,
+    marginBottom: "16px",
   },
-  subtitle: {
+  description: {
     color: "#94a3b8",
-    lineHeight: "1.7",
-    maxWidth: "600px",
+    lineHeight: 1.8,
+    fontSize: "16px",
+    marginBottom: "28px",
+    maxWidth: "420px",
   },
-  statsBox: {
+  statsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "12px",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: "14px",
   },
   statCard: {
     background: "rgba(255,255,255,0.05)",
     border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "16px",
+    borderRadius: "18px",
     padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
   },
   statNumber: {
-    fontSize: "30px",
+    fontSize: "28px",
     fontWeight: "bold",
+    display: "block",
     marginBottom: "6px",
   },
   statLabel: {
     color: "#94a3b8",
-    fontSize: "14px",
-  },
-  card: {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: "22px",
-    padding: "24px",
-    boxShadow: "0 25px 60px rgba(0,0,0,0.25)",
-    backdropFilter: "blur(12px)",
   },
   inputRow: {
     display: "flex",
@@ -277,63 +288,54 @@ const styles = {
   },
   input: {
     flex: 1,
-    minWidth: "240px",
-    padding: "14px 16px",
-    borderRadius: "12px",
-    border: "1px solid #334155",
-    outline: "none",
-    fontSize: "16px",
-    background: "#0f172a",
+    minWidth: "220px",
+    background: "rgba(255,255,255,0.05)",
     color: "white",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "16px",
+    padding: "16px",
+    fontSize: "16px",
+    outline: "none",
   },
   addButton: {
-    background: "linear-gradient(90deg, #38bdf8, #22d3ee)",
-    color: "#0f172a",
     border: "none",
-    padding: "14px 18px",
-    borderRadius: "12px",
+    borderRadius: "16px",
+    padding: "16px 20px",
     fontWeight: "bold",
     cursor: "pointer",
+    background: "linear-gradient(90deg, #3b82f6, #8b5cf6)",
+    color: "white",
+    boxShadow: "0 10px 30px rgba(59,130,246,0.35)",
   },
-  toolbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "12px",
-    marginBottom: "20px",
-    flexWrap: "wrap",
-  },
-  filterGroup: {
+  filterRow: {
     display: "flex",
     gap: "10px",
+    marginBottom: "22px",
     flexWrap: "wrap",
   },
   filterButton: {
-    border: "1px solid rgba(255,255,255,0.1)",
-    background: "rgba(255,255,255,0.03)",
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.08)",
     color: "white",
-    padding: "10px 14px",
+    padding: "10px 16px",
     borderRadius: "999px",
     cursor: "pointer",
   },
   filterButtonActive: {
-    background: "linear-gradient(90deg, #38bdf8, #22d3ee)",
-    color: "#0f172a",
+    background: "linear-gradient(90deg, #3b82f6, #8b5cf6)",
     border: "none",
-    fontWeight: "bold",
   },
-  clearButton: {
-    background: "transparent",
-    color: "#fca5a5",
-    border: "1px solid rgba(252, 165, 165, 0.25)",
-    padding: "10px 14px",
-    borderRadius: "999px",
-    cursor: "pointer",
+  taskList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
   },
-  emptyState: {
+  emptyBox: {
     padding: "40px 20px",
     textAlign: "center",
-    border: "1px dashed rgba(255,255,255,0.1)",
-    borderRadius: "16px",
+    borderRadius: "18px",
+    background: "rgba(255,255,255,0.04)",
+    border: "1px dashed rgba(255,255,255,0.08)",
   },
   emptyTitle: {
     marginBottom: "8px",
@@ -341,23 +343,15 @@ const styles = {
   emptyText: {
     color: "#94a3b8",
   },
-  list: {
-    listStyle: "none",
-    padding: 0,
-    margin: 0,
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-  listItem: {
-    background: "#0f172a",
-    border: "1px solid #334155",
-    padding: "14px 16px",
-    borderRadius: "14px",
+  taskCard: {
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "18px",
+    padding: "16px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: "14px",
+    gap: "12px",
     flexWrap: "wrap",
   },
   taskLeft: {
@@ -365,22 +359,21 @@ const styles = {
     alignItems: "center",
     gap: "12px",
     flex: 1,
-    minWidth: "220px",
+    minWidth: "200px",
   },
   checkButton: {
-    width: "28px",
-    height: "28px",
+    width: "30px",
+    height: "30px",
     borderRadius: "50%",
-    border: "1px solid #475569",
+    border: "1px solid rgba(255,255,255,0.18)",
     background: "transparent",
     color: "white",
     cursor: "pointer",
     fontWeight: "bold",
   },
   checkButtonDone: {
-    background: "#22c55e",
-    border: "1px solid #22c55e",
-    color: "white",
+    background: "linear-gradient(90deg, #22c55e, #16a34a)",
+    border: "none",
   },
   taskText: {
     fontSize: "16px",
@@ -390,11 +383,11 @@ const styles = {
     color: "#94a3b8",
   },
   deleteButton: {
-    background: "#ef4444",
-    color: "white",
-    border: "none",
+    background: "rgba(239,68,68,0.16)",
+    color: "#fca5a5",
+    border: "1px solid rgba(239,68,68,0.22)",
     padding: "10px 14px",
-    borderRadius: "10px",
+    borderRadius: "12px",
     cursor: "pointer",
     fontWeight: "bold",
   },
